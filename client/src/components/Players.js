@@ -1,7 +1,44 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardMedia from "@material-ui/core/CardMedia";
+import CardContent from "@material-ui/core/CardContent";
+import Avatar from "@material-ui/core/Avatar";
+import Typography from "@material-ui/core/Typography";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    maxWidth: 345,
+  },
+  header: {
+    minHeight: 70,
+  },
+  media: {
+    height: 0,
+    minWidth: 345,
+    paddingTop: "56.25%", // 16:9
+  },
+  expand: {
+    transform: "rotate(0deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: "rotate(180deg)",
+  },
+  avatar: {
+    backgroundColor: "#113CCF",
+  },
+}));
+
 function Players() {
+  const classes = useStyles();
   const [roster, setRoster] = useState([]);
 
   useEffect((async) => {
@@ -24,14 +61,26 @@ function Players() {
         });
       });
   }, []);
+  console.log(roster);
 
   const currentRoster = roster.map((player) => {
-    return <li>{player.pl.fn}</li>;
+    console.log(player);
+    return (
+      <Grid item md={3} key={player.pl.pid}>
+        {player.pl.fn} {player.pl.ln}
+        <CardMedia
+          className={classes.media}
+          image={`https://cdn.nba.com/headshots/nba/latest/1040x760/${player.pl.pid}.png`}
+        />
+      </Grid>
+    );
   });
 
   return (
     <div>
-      <ul>{currentRoster}</ul>
+      <Grid container spacing={2}>
+        {currentRoster}
+      </Grid>
     </div>
   );
 }
