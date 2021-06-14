@@ -26,32 +26,55 @@ const useStyles = makeStyles((theme) => ({
     minHeight: 70,
   },
   media: {
-    height: 0,
-    minWidth: 345,
+    height: 300,
+    // minWidth: 345,
     paddingTop: "56.25%", // 16:9
   },
-
-  avatar: {
-    backgroundColor: "#113CCF",
+  mediaBack: {
+    height: 600,
+  },
+  square: {
+    color: theme.palette.getContrastText("#CC0000"),
+    backgroundColor: "#CC0000",
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
   },
 }));
 
 function Players() {
   const classes = useStyles();
   const [roster, setRoster] = useState([]);
-  const [teamSelected, seTeamSelected] = useState([]);
-  const [teamData, setTeamData] = useState([]);
+  const [teamSelected, setTeamSelected] = useState([]);
+  const [teamData, setTeamData] = useState("1610612757");
   const ref = useRef();
 
   const handleChange = (event) => {
+    setRoster([]);
     setTeamData(event.target.value);
+  };
+
+  const playerPosition = (letter) => {
+    if (letter === "F-G") {
+      return "Forward-Guard";
+    }
+    if (letter === "F-C") {
+      return "Forward-Center";
+    }
+    if (letter === "F") {
+      return "Forward";
+    }
+    if (letter === "G-F") {
+      return "Guard-Forward";
+    }
+    if (letter === "G") {
+      return "Guard";
+    }
+    if (letter === "C") {
+      return "Center";
+    }
+    return letter;
   };
 
   useEffect(() => {
@@ -80,35 +103,38 @@ function Players() {
     return (
       <Flippy
         key={player.pl.pid}
-        flipOnHover={false} // default false
-        flipOnClick={true} // default false
-        flipDirection="horizontal" // horizontal or vertical
-        ref={ref} // to use toggle method like ref.curret.toggle()
-        // if you pass isFlipped prop component will be controlled component.
-        // and other props, which will go to div
+        flipOnHover={false}
+        flipOnClick={true}
+        flipDirection="horizontal"
+        ref={ref}
+        style={{ width: "400px", height: "650px" }}
       >
-        <Grid className={classes.card} item>
-          <FrontSide>
-            <Card className={classes.root}>
-              <CardHeader
-                className={classes.header}
-                avatar={
-                  <Avatar aria-label="Player Number" className={classes.avatar}>
-                    {player.pl.num}
-                  </Avatar>
-                }
-                title={`${player.pl.fn} ${player.pl.ln}`}
-              />
+        <FrontSide>
+          <Card className={classes.root}>
+            <CardHeader
+              className={classes.header}
+              avatar={
+                <Avatar
+                  aria-label="Player Number"
+                  variant="square"
+                  className={classes.square}
+                >
+                  {player.pl.num}
+                </Avatar>
+              }
+              title={`${player.pl.fn} ${player.pl.ln}`}
+              subheader={playerPosition(player.pl.pos)}
+            />
 
-              <CardMedia
-                className={classes.media}
-                image={`https://cdn.nba.com/headshots/nba/latest/1040x760/${player.pl.pid}.png`}
-              />
-            </Card>
-          </FrontSide>
-          <BackSide>
-            <Card className={classes.root}>
-              <CardHeader
+            <CardMedia
+              className={classes.media}
+              image={`https://cdn.nba.com/headshots/nba/latest/1040x760/${player.pl.pid}.png`}
+            />
+          </Card>
+        </FrontSide>
+        <BackSide className={classes.root}>
+          {/* <Card className={classes.root}> */}
+          {/* <CardHeader
                 className={classes.header}
                 avatar={
                   <Avatar aria-label="Player Number" className={classes.avatar}>
@@ -116,11 +142,13 @@ function Players() {
                   </Avatar>
                 }
                 title={`${player.pl.fn} ${player.pl.ln}`}
-              />
-              {player.pl.fn} {player.pl.ln}
-            </Card>
-          </BackSide>
-        </Grid>
+              /> */}
+          <CardMedia
+            className={classes.mediaBack}
+            image={`https://ak-static.cms.nba.com/wp-content/uploads/silos/nba/latest/440x700/${player.pl.pid}.png`}
+          />
+          {/* </Card> */}
+        </BackSide>
       </Flippy>
     );
   });
@@ -136,6 +164,7 @@ function Players() {
           onChange={handleChange}
         >
           <MenuItem value={1610612757}>Portland Trail Blazers</MenuItem>
+          <MenuItem value={1610612737}>Atlanta Hawks</MenuItem>
         </Select>
       </FormControl>
       <br />
