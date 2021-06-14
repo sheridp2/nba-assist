@@ -126,7 +126,7 @@ function Players() {
         flipOnClick={true}
         flipDirection="horizontal"
         ref={ref}
-        style={{ width: "400px", height: "650px" }}
+        style={{ width: "400px", height: "650px", margin: 5 }}
       >
         <FrontSide className={classes.root}>
           {/* <Card className={classes.root}> */}
