@@ -2,24 +2,25 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Flippy, { FrontSide, BackSide } from "react-flippy";
 import { getMainColor } from "nba-color";
+import Dropdown from "react-dropdown";
+import "react-dropdown/style.css";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
-// import CardContent from "@material-ui/core/CardContent";
 import Avatar from "@material-ui/core/Avatar";
-// import Typography from "@material-ui/core/Typography";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
+import Typography from "@material-ui/core/Typography";
 // import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import { CardContent } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "red",
+    border: "1px solid black",
+    borderRadius: "5px",
 
     "&:hover": {
       boxShadow: "-1px 10px 29px 0px rgba(0,0,0,0.8)",
@@ -28,21 +29,28 @@ const useStyles = makeStyles((theme) => ({
   rootback: {
     height: 650,
     backgroundColor: "red",
+    borderRadius: "5px",
+    border: "1px solid black",
     "&:hover": {
       boxShadow: "-2px 10px 29px 0px rgba(0,0,0,0.8)",
     },
   },
   header: {
     minHeight: 70,
+    borderRadius: "5px",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   media: {
     height: 300,
+
     backgroundColor: "white",
     // minWidth: 345,
     paddingTop: "56.25%", // 16:9
   },
   mediaBack: {
     height: 620,
+    // background: `url(${("./logo.png")})`,
+    borderRadius: "5px",
     backgroundColor: "white",
   },
   overlay: {
@@ -51,16 +59,23 @@ const useStyles = makeStyles((theme) => ({
     left: "20px",
     color: "black",
     backgroundColor: "white",
+    opacity: 0.8,
   },
   square: {
     color: theme.palette.getContrastText("#CC0000"),
     backgroundColor: "#CC0000",
   },
   formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
+    marginBottom: theme.spacing(1),
+    minWidth: 200,
   },
 }));
+
+const options = [
+  { value: 1610612757, label: "Portland Trail Blazers" },
+  { value: 1610612737, label: "Atlanta Hawks" },
+  ,
+];
 
 function Players() {
   const classes = useStyles();
@@ -70,9 +85,12 @@ function Players() {
   const ref = useRef();
 
   const handleChange = (event) => {
-    setRoster([]);
-    setTeamData(event.target.value);
-    // setTeamSelected(getMainColor(event.target.abbreviation));
+    if (event.label !== teamSelected) {
+      setRoster([]);
+      setTeamData(event.value);
+      setTeamSelected(event.label);
+    }
+    console.log(event);
   };
 
   const playerPosition = (letter) => {
@@ -112,6 +130,7 @@ function Players() {
                 "_02.json"
             )
             .then((playerCard) => {
+              console.log(playerCard.data);
               setRoster((oldRoster) => [...oldRoster, playerCard.data]);
             });
         });
@@ -126,28 +145,37 @@ function Players() {
         flipOnClick={true}
         flipDirection="horizontal"
         ref={ref}
-        style={{ width: "400px", height: "650px", margin: 5 }}
+        style={{
+          width: "400px",
+          height: "650px",
+          margin: 5,
+        }}
       >
+        {/* Front of Card Start */}
         <FrontSide className={classes.root}>
-          {/* <Card className={classes.root}> */}
-          {/* <CardHeader
-                className={classes.header}
-                avatar={
-                  <Avatar aria-label="Player Number" className={classes.avatar}>
-                    {player.pl.num}
-                  </Avatar>
-                }
-                title={`${player.pl.fn} ${player.pl.ln}`}
-              /> */}
           <CardMedia
             className={classes.mediaBack}
             image={`https://ak-static.cms.nba.com/wp-content/uploads/silos/nba/latest/440x700/${player.pl.pid}.png`}
           />
           <div className={classes.overlay}>
-            {player.pl.fn} {player.pl.ln}
+            <CardHeader
+              className={classes.header}
+              avatar={
+                <Avatar
+                  aria-label="Player Number"
+                  variant="square"
+                  className={classes.square}
+                >
+                  {player.pl.num}
+                </Avatar>
+              }
+              title={`${player.pl.fn} ${player.pl.ln}`}
+              subheader={playerPosition(player.pl.pos)}
+            />
           </div>
-          {/* </Card> */}
         </FrontSide>
+        {/* Front of Card End */}
+        {/* Back of Card Start */}
         <BackSide className={classes.rootback}>
           <Card>
             <CardHeader
@@ -170,7 +198,33 @@ function Players() {
               image={`https://cdn.nba.com/headshots/nba/latest/1040x760/${player.pl.pid}.png`}
             />
           </Card>
+          <Card>
+            <CardContent>
+              <Typography variant="body2">
+                D.O.B: {player.pl.dob}
+                <br />
+                Height: {player.pl.ht}
+                <br />
+                Weight: {player.pl.wt}
+                <br />
+                <hr />
+                Career ({player.pl.y} years in league)
+                <br />
+                Total pts: {player.pl.ct.pts}
+                <br />
+                Avg PPG: {player.pl.ca.pts}
+                {/* {player.pl.ca.sa[player.pl.ca.sa.length - 1].val} Season
+                <br />
+                PPG: {player.pl.ca.sa[player.pl.ca.sa.length - 1].pts}
+                <br />
+                PPG: {player.pl.ca.sa[player.pl.ca.sa.length - 1].pts}
+                <br />
+                PPG: {player.pl.ca.sa[player.pl.ca.sa.length - 1].pts} */}
+              </Typography>
+            </CardContent>
+          </Card>
         </BackSide>
+        {/* Back of Card End */}
       </Flippy>
     );
   });
@@ -178,20 +232,11 @@ function Players() {
   return (
     <div>
       <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">Team</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={teamData}
+        <Dropdown
+          options={options}
           onChange={handleChange}
-        >
-          <MenuItem value={1610612757} abbreviation={"POR"}>
-            Portland Trail Blazers
-          </MenuItem>
-          <MenuItem value={1610612737} abbreviation={"ATL"}>
-            Atlanta Hawks
-          </MenuItem>
-        </Select>
+          placeholder="Select team"
+        />
       </FormControl>
       <br />
       <Grid container spacing={2}>
