@@ -88,10 +88,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "12px",
     outlineOffset: " 0.5rem",
   },
-  square: {
-    color: theme.palette.getContrastText("#CC0000"),
-    backgroundColor: "#CC0000",
-  },
+
   formControl: {
     marginBottom: theme.spacing(1),
     minWidth: 200,
@@ -99,7 +96,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const options = [
-  { value: "1610612757", label: "Portland Trail Blazers" },
   { value: "1610612737", label: "Atlanta Hawks" },
   { value: "1610612751", label: "Brooklyn Nets" },
   { value: "1610612738", label: "Boston Celtics" },
@@ -107,6 +103,29 @@ const options = [
   { value: "1610612741", label: "Chicago Bulls" },
   { value: "1610612739", label: "Cleveland Cavaliers" },
   { value: "1610612742", label: "Dallas Mavericks" },
+  { value: "1610612743", label: "Denver Nuggets" },
+  { value: "1610612765", label: "Detroit Pistons" },
+  { value: "1610612744", label: "Golden State Warriors" },
+  { value: "1610612745", label: "Houston Rockets" },
+  { value: "1610612754", label: "Indiana Pacers" },
+  { value: "1610612746", label: "L.A. Clippers" },
+  { value: "1610612747", label: "L.A. Lakers" },
+  { value: "1610612763", label: "Memphis Grizzlies" },
+  { value: "1610612748", label: "Miami Heat" },
+  { value: "1610612749", label: "Milwaukee Bucks" },
+  { value: "1610612750", label: "Minnesota Timberwolves" },
+  { value: "1610612740", label: "New Orleans Pelicans" },
+  { value: "1610612752", label: "New York Knicks" },
+  { value: "1610612760", label: "Oklahoma City Thunder" },
+  { value: "1610612753", label: "Orlando Magic" },
+  { value: "1610612755", label: "Philadelphia 76ers" },
+  { value: "1610612756", label: "Phoenix Suns" },
+  { value: "1610612757", label: "Portland Trail Blazers" },
+  { value: "1610612758", label: "Sacramento Kings" },
+  { value: "1610612759", label: "San Antonio Spurs" },
+  { value: "1610612761", label: "Toronto Raptors" },
+  { value: "1610612762", label: "Utah Jazz" },
+  { value: "1610612764", label: "Washington Wizards" },
 ];
 
 function Players() {
@@ -297,6 +316,7 @@ function Players() {
     <div>
       <FormControl className={classes.formControl}>
         <Dropdown
+          value={{ value: "1610612757", label: "Portland Trail Blazers" }}
           options={options}
           onChange={handleChange}
           placeholder="Select team"
