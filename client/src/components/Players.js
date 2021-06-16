@@ -12,6 +12,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Avatar from "@material-ui/core/Avatar";
 import FormControl from "@material-ui/core/FormControl";
 import { CardContent, Fade } from "@material-ui/core";
+import { getMainColor, getSecondaryColor, getColors } from "nba-color";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
 
   rootback: {
     height: 650,
-    backgroundColor: "red",
     borderRadius: "5px",
     border: "5px solid black",
     "&:hover": {
@@ -43,8 +43,10 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     height: 200,
     width: "92%",
+    padding: 15,
     borderRadius: "5px",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    color: "white",
   },
 
   header: {
@@ -60,23 +62,22 @@ const useStyles = makeStyles((theme) => ({
     // paddingTop: "56%", //
   },
   mediaBack: {
-    height: 615,
-    border: "2px solid black",
-    // background: `url(${("./logo.png")})`,
+    height: 612,
+    border: "5px solid",
     borderRadius: "5px",
     backgroundColor: "white",
   },
   overlay: {
     position: "absolute",
-    top: "18px",
-    left: "18px",
+    top: "20px",
+    left: "20px",
     color: "black",
     backgroundColor: "white",
     opacity: 0.8,
   },
   cardBack: {
     border: "0.5rem outset rgb(192,192,192)",
-    boxShadow: "0 0 0 .2rem black",
+
     borderRadius: "12px",
     marginBottom: 10,
 
@@ -84,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cardInfo: {
     border: "0.5rem outset rgb(192,192,192)",
-    boxShadow: "0 0 0 .2rem black",
+    boxShadow: "0 0 0 .2rem",
     borderRadius: "12px",
     outlineOffset: " 0.5rem",
   },
@@ -135,6 +136,8 @@ function Players() {
   const [teamSelected, setTeamSelected] = useState("Portland Trail Blazers");
   const [teamData, setTeamData] = useState([]);
   const [teamId, setTeamId] = useState("1610612757");
+  const [primaryColor, setPrimaryColor] = useState([]);
+  const [secondaryColor, setSecondaryColor] = useState([]);
   const ref = useRef();
 
   const handleChange = (event) => {
@@ -176,7 +179,9 @@ function Players() {
         for (let i = 0; i < teamList.length; i++) {
           if (teamList[i].teamId === teamId) {
             setTeamData(teamList[i]);
-            console.log(teamList[i]);
+            console.log(getColors(teamList[i].tricode));
+            setPrimaryColor(getMainColor(teamList[i].tricode));
+            setSecondaryColor(getSecondaryColor(teamList[i].tricode));
           }
         }
       });
@@ -195,6 +200,7 @@ function Players() {
                 "_02.json"
             )
             .then((playerCard) => {
+              console.log(playerCard);
               setRoster((oldRoster) => [...oldRoster, playerCard.data]);
             });
         });
@@ -206,6 +212,9 @@ function Players() {
       if (teams[i].teamId === id) {
         console.log(teams[i]);
         setTeamData(teams[i]);
+        console.log(getColors(teams[i].tricode));
+        setPrimaryColor(getMainColor(teams[i].tricode));
+        setSecondaryColor(getSecondaryColor(teams[i].tricode));
       }
     }
   }
@@ -227,10 +236,14 @@ function Players() {
         {/* Front of Card Start */}
         <FrontSide
           className={classes.root}
-          style={{ backgroundColor: teamData.primaryColor }}
+          style={{
+            backgroundColor: primaryColor.hex,
+            borderColor: secondaryColor.hex,
+          }}
         >
           <CardMedia
             className={classes.mediaBack}
+            style={{ borderColor: secondaryColor.hex }}
             image={`https://ak-static.cms.nba.com/wp-content/uploads/silos/nba/latest/440x700/${player.pl.pid}.png`}
           />
           <div className={classes.overlay}>
@@ -241,7 +254,7 @@ function Players() {
                   aria-label="Player Number"
                   variant="square"
                   className={classes.square}
-                  style={{ backgroundColor: teamData.primaryColor }}
+                  style={{ backgroundColor: primaryColor.hex }}
                 >
                   {player.pl.num}
                 </Avatar>
@@ -251,15 +264,44 @@ function Players() {
             />
           </div>
 
-          <div className={classes.hoverInfo}>Info</div>
+          <div className={classes.hoverInfo}>
+            {player.pl.ca.sa
+              ? player.pl.ca.sa[player.pl.ca.sa.length - 1].val
+              : "N/A"}
+            &nbsp;Season Stats
+            <br />
+            PPG:&nbsp;
+            {player.pl.ca.sa
+              ? player.pl.ca.sa[player.pl.ca.sa.length - 1].pts
+              : "N/A"}
+            <br />
+            RPG:&nbsp;
+            {player.pl.ca.sa
+              ? player.pl.ca.sa[player.pl.ca.sa.length - 1].reb
+              : "N/A"}
+            <br />
+            APG:&nbsp;
+            {player.pl.ca.sa
+              ? player.pl.ca.sa[player.pl.ca.sa.length - 1].ast
+              : "N/A"}
+          </div>
         </FrontSide>
         {/* Front of Card End */}
         {/* Back of Card Start */}
         <BackSide
           className={classes.rootback}
-          style={{ backgroundColor: teamData.primaryColor }}
+          style={{
+            backgroundColor: primaryColor.hex,
+            borderColor: secondaryColor.hex,
+          }}
         >
-          <Card className={classes.cardBack}>
+          <Card
+            className={classes.cardBack}
+            style={{
+              borderColor: primaryColor.hex,
+              boxShadow: `0 0 0 .2rem ${secondaryColor.hex}`,
+            }}
+          >
             <CardHeader
               className={classes.header}
               avatar={
@@ -267,7 +309,9 @@ function Players() {
                   aria-label="Player Number"
                   variant="square"
                   className={classes.square}
-                  style={{ backgroundColor: teamData.primaryColor }}
+                  style={{
+                    backgroundColor: primaryColor.hex,
+                  }}
                 >
                   {player.pl.num}
                 </Avatar>
@@ -282,7 +326,10 @@ function Players() {
             />
           </Card>
           <Card>
-            <CardContent className={classes.cardInfo}>
+            <CardContent
+              className={classes.cardInfo}
+              style={{ boxShadow: `0 0 0 .2rem ${secondaryColor.hex}` }}
+            >
               <div variant="body2">
                 D.O.B: {player.pl.dob}
                 <br />
@@ -296,13 +343,6 @@ function Players() {
                 Total pts: {player.pl.ct.pts}
                 <br />
                 Avg PPG: {player.pl.ca.pts}
-                {/* {player.pl.ca.sa[player.pl.ca.sa.length - 1].val} Season
-                <br />
-                PPG: {player.pl.ca.sa[player.pl.ca.sa.length - 1].pts}
-                <br />
-                PPG: {player.pl.ca.sa[player.pl.ca.sa.length - 1].pts}
-                <br />
-                PPG: {player.pl.ca.sa[player.pl.ca.sa.length - 1].pts} */}
               </div>
             </CardContent>
           </Card>
@@ -316,7 +356,6 @@ function Players() {
     <div>
       <FormControl className={classes.formControl}>
         <Dropdown
-          value={{ value: "1610612757", label: "Portland Trail Blazers" }}
           options={options}
           onChange={handleChange}
           placeholder="Select team"

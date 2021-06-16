@@ -1,5 +1,5 @@
 import { Container } from "@material-ui/core";
-import Players from "./components/Players";
+import Players from "./components/Players.js";
 
 function App() {
   return (
