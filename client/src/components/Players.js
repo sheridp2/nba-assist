@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Flippy, { FrontSide, BackSide } from "react-flippy";
-import { getMainColor } from "nba-color";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 
@@ -12,54 +11,84 @@ import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
-// import FormHelperText from "@material-ui/core/FormHelperText";
+
 import FormControl from "@material-ui/core/FormControl";
-import { CardContent } from "@material-ui/core";
+import { CardContent, Fade } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "red",
-    border: "1px solid black",
+    border: "5px solid black",
     borderRadius: "5px",
 
     "&:hover": {
-      boxShadow: "-1px 10px 29px 0px rgba(0,0,0,0.8)",
+      boxShadow: "-1px 10px 29px 0px rgba(192,192,192,0.8)",
+      "& $hoverInfo": {
+        display: "block",
+      },
     },
   },
+
   rootback: {
     height: 650,
     backgroundColor: "red",
     borderRadius: "5px",
-    border: "1px solid black",
+    border: "5px solid black",
     "&:hover": {
-      boxShadow: "-2px 10px 29px 0px rgba(0,0,0,0.8)",
+      boxShadow: "-1px 10px 29px 0px rgba(192,192,192,0.8)",
     },
   },
+  hoverInfo: {
+    display: "none",
+    position: "absolute",
+    bottom: 11,
+    left: 16,
+    right: 0,
+    height: 200,
+    width: "92%",
+    borderRadius: "5px",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+  },
+
   header: {
     minHeight: 70,
-    borderRadius: "5px",
+    borderRadius: "2px",
     backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   media: {
     height: 300,
-
     backgroundColor: "white",
-    // minWidth: 345,
-    paddingTop: "56.25%", // 16:9
+    borderRadius: "5px",
+
+    // paddingTop: "56%", //
   },
   mediaBack: {
-    height: 620,
+    height: 615,
+    border: "2px solid black",
     // background: `url(${("./logo.png")})`,
     borderRadius: "5px",
     backgroundColor: "white",
   },
   overlay: {
     position: "absolute",
-    top: "20px",
-    left: "20px",
+    top: "18px",
+    left: "18px",
     color: "black",
     backgroundColor: "white",
     opacity: 0.8,
+  },
+  cardBack: {
+    border: "0.5rem outset rgb(192,192,192)",
+    boxShadow: "0 0 0 .2rem black",
+    borderRadius: "12px",
+    marginBottom: 10,
+
+    outlineOffset: " 0.5rem",
+  },
+  cardInfo: {
+    border: "0.5rem outset rgb(192,192,192)",
+    boxShadow: "0 0 0 .2rem black",
+    borderRadius: "12px",
+    outlineOffset: " 0.5rem",
   },
   square: {
     color: theme.palette.getContrastText("#CC0000"),
@@ -72,25 +101,32 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const options = [
-  { value: 1610612757, label: "Portland Trail Blazers" },
-  { value: 1610612737, label: "Atlanta Hawks" },
-  ,
+  { value: "1610612757", label: "Portland Trail Blazers" },
+  { value: "1610612737", label: "Atlanta Hawks" },
+  { value: "1610612751", label: "Brooklyn Nets" },
+  { value: "1610612738", label: "Boston Celtics" },
+  { value: "1610612766", label: "Charlotte Hornets" },
+  { value: "1610612741", label: "Chicago Bulls" },
+  { value: "1610612739", label: "Cleveland Cavaliers" },
+  { value: "1610612742", label: "Dallas Mavericks" },
 ];
 
 function Players() {
   const classes = useStyles();
   const [roster, setRoster] = useState([]);
-  const [teamSelected, setTeamSelected] = useState("POR");
-  const [teamData, setTeamData] = useState("1610612757");
+  const [allNBATeams, setAllNBATeams] = useState([]);
+  const [teamSelected, setTeamSelected] = useState("Portland Trail Blazers");
+  const [teamData, setTeamData] = useState([]);
+  const [teamId, setTeamId] = useState("1610612757");
   const ref = useRef();
 
   const handleChange = (event) => {
     if (event.label !== teamSelected) {
       setRoster([]);
-      setTeamData(event.value);
+      setTeamId(event.value);
       setTeamSelected(event.label);
+      getTeamData(allNBATeams, event.value);
     }
-    console.log(event);
   };
 
   const playerPosition = (letter) => {
@@ -114,13 +150,25 @@ function Players() {
     }
     return letter;
   };
+  useEffect(() => {
+    axios
+      .get("https://data.nba.net/prod/2020/teams_config.json")
+      .then((res) => {
+        let teamList = res.data.teams.config;
+        setAllNBATeams(teamList);
+        for (let i = 0; i < teamList.length; i++) {
+          if (teamList[i].teamId === teamId) {
+            setTeamData(teamList[i]);
+            console.log(teamList[i]);
+          }
+        }
+      });
+  }, []);
 
   useEffect(() => {
     axios
-      .get(`https://data.nba.com/prod/v1/2020/teams/${teamData}/roster.json`)
+      .get(`https://data.nba.com/prod/v1/2020/teams/${teamId}/roster.json`)
       .then((res) => {
-        console.log(res, "Team data");
-
         Object.values(res.data.league.standard.players).forEach((player) => {
           let temp = player.personId;
           axios
@@ -130,12 +178,20 @@ function Players() {
                 "_02.json"
             )
             .then((playerCard) => {
-              console.log(playerCard.data);
               setRoster((oldRoster) => [...oldRoster, playerCard.data]);
             });
         });
       });
-  }, [teamData]);
+  }, [teamId]);
+
+  function getTeamData(teams, id) {
+    for (let i = 0; i < teams.length; i++) {
+      if (teams[i].teamId === id) {
+        console.log(teams[i]);
+        setTeamData(teams[i]);
+      }
+    }
+  }
 
   const currentRoster = roster.map((player) => {
     return (
@@ -152,7 +208,10 @@ function Players() {
         }}
       >
         {/* Front of Card Start */}
-        <FrontSide className={classes.root}>
+        <FrontSide
+          className={classes.root}
+          style={{ backgroundColor: teamData.primaryColor }}
+        >
           <CardMedia
             className={classes.mediaBack}
             image={`https://ak-static.cms.nba.com/wp-content/uploads/silos/nba/latest/440x700/${player.pl.pid}.png`}
@@ -165,6 +224,7 @@ function Players() {
                   aria-label="Player Number"
                   variant="square"
                   className={classes.square}
+                  style={{ backgroundColor: teamData.primaryColor }}
                 >
                   {player.pl.num}
                 </Avatar>
@@ -173,11 +233,16 @@ function Players() {
               subheader={playerPosition(player.pl.pos)}
             />
           </div>
+
+          <div className={classes.hoverInfo}>Info</div>
         </FrontSide>
         {/* Front of Card End */}
         {/* Back of Card Start */}
-        <BackSide className={classes.rootback}>
-          <Card>
+        <BackSide
+          className={classes.rootback}
+          style={{ backgroundColor: teamData.primaryColor }}
+        >
+          <Card className={classes.cardBack}>
             <CardHeader
               className={classes.header}
               avatar={
@@ -185,6 +250,7 @@ function Players() {
                   aria-label="Player Number"
                   variant="square"
                   className={classes.square}
+                  style={{ backgroundColor: teamData.primaryColor }}
                 >
                   {player.pl.num}
                 </Avatar>
@@ -199,8 +265,8 @@ function Players() {
             />
           </Card>
           <Card>
-            <CardContent>
-              <Typography variant="body2">
+            <CardContent className={classes.cardInfo}>
+              <div variant="body2">
                 D.O.B: {player.pl.dob}
                 <br />
                 Height: {player.pl.ht}
@@ -220,7 +286,7 @@ function Players() {
                 PPG: {player.pl.ca.sa[player.pl.ca.sa.length - 1].pts}
                 <br />
                 PPG: {player.pl.ca.sa[player.pl.ca.sa.length - 1].pts} */}
-              </Typography>
+              </div>
             </CardContent>
           </Card>
         </BackSide>
@@ -237,6 +303,7 @@ function Players() {
           onChange={handleChange}
           placeholder="Select team"
         />
+        Click player to learn more
       </FormControl>
       <br />
       <Grid container spacing={2}>
