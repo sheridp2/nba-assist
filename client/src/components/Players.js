@@ -10,8 +10,6 @@ import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
-
 import FormControl from "@material-ui/core/FormControl";
 import { CardContent, Fade } from "@material-ui/core";
 
