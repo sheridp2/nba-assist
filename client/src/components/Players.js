@@ -13,6 +13,7 @@ import Avatar from "@material-ui/core/Avatar";
 import FormControl from "@material-ui/core/FormControl";
 import { CardContent, Fade } from "@material-ui/core";
 import { getMainColor, getSecondaryColor, getColors } from "nba-color";
+import * as NBAIcons from "react-nba-logos";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,6 +94,7 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     marginBottom: theme.spacing(1),
     minWidth: 200,
+    paddingTop: 20,
   },
 }));
 
@@ -178,8 +180,9 @@ function Players() {
         setAllNBATeams(teamList);
         for (let i = 0; i < teamList.length; i++) {
           if (teamList[i].teamId === teamId) {
+            console.log(teamList[i]);
             setTeamData(teamList[i]);
-            console.log(getColors(teamList[i].tricode));
+
             setPrimaryColor(getMainColor(teamList[i].tricode));
             setSecondaryColor(getSecondaryColor(teamList[i].tricode));
           }
@@ -243,7 +246,7 @@ function Players() {
         >
           <CardMedia
             className={classes.mediaBack}
-            style={{ borderColor: secondaryColor.hex }}
+            style={{ backgroundColor: secondaryColor.hex }}
             image={`https://ak-static.cms.nba.com/wp-content/uploads/silos/nba/latest/440x700/${player.pl.pid}.png`}
           />
           <div className={classes.overlay}>
@@ -362,6 +365,9 @@ function Players() {
         />
         Click player to learn more
       </FormControl>
+      {/* <img
+        src={`http://i.cdn.turner.com/nba/nba/.element/img/1.0/teamsites/logos/teamlogos_500x500/${teamData.tricode}.png`}
+      /> */}
       <br />
       <Grid container spacing={2}>
         {currentRoster}

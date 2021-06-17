@@ -1,12 +1,9 @@
-import { Container } from "@material-ui/core";
-import Players from "./components/Players.js";
+import Index from "./components/Index.js";
 
 function App() {
   return (
     <div className="App">
-      <Container>
-        <Players />
-      </Container>
+      <Index />
     </div>
   );
 }
