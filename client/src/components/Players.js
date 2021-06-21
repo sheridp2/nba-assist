@@ -12,6 +12,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Avatar from "@material-ui/core/Avatar";
 import FormControl from "@material-ui/core/FormControl";
 import { CardContent, Fade } from "@material-ui/core";
+import Switch from "@material-ui/core/Switch";
 import { getMainColor, getSecondaryColor, getColors } from "nba-color";
 import * as NBAIcons from "react-nba-logos";
 
@@ -39,11 +40,11 @@ const useStyles = makeStyles((theme) => ({
   hoverInfo: {
     display: "none",
     position: "absolute",
-    bottom: 11,
-    left: 16,
+    bottom: 13,
+    left: 14,
     right: 0,
     height: 200,
-    width: "92%",
+    width: "93%",
     padding: 15,
     borderRadius: "5px",
     backgroundColor: "rgba(0, 0, 0, 0.6)",
@@ -64,12 +65,16 @@ const useStyles = makeStyles((theme) => ({
   },
   mediaBack: {
     height: 612,
-    border: "5px solid",
+    border: "5px ",
     borderRadius: "5px",
-    backgroundColor: "white",
+    border: "0.5rem outset rgb(192,192,192)",
+    borderRadius: "12px",
+    marginBottom: 10,
+    outlineOffset: " 0.5rem",
   },
   overlay: {
     position: "absolute",
+    borderRadius: "3px",
     top: "20px",
     left: "20px",
     color: "black",
@@ -78,7 +83,6 @@ const useStyles = makeStyles((theme) => ({
   },
   cardBack: {
     border: "0.5rem outset rgb(192,192,192)",
-
     borderRadius: "12px",
     marginBottom: 10,
 
@@ -140,7 +144,8 @@ function Players() {
   const [teamId, setTeamId] = useState("1610612757");
   const [primaryColor, setPrimaryColor] = useState([]);
   const [secondaryColor, setSecondaryColor] = useState([]);
-  const ref = useRef();
+  const [invertColor, setInvertColor] = useState(false);
+  const ref = React.createRef();
 
   const handleChange = (event) => {
     if (event.label !== teamSelected) {
@@ -149,6 +154,13 @@ function Players() {
       setTeamSelected(event.label);
       getTeamData(allNBATeams, event.value);
     }
+  };
+
+  const toggleColors = () => {
+    setInvertColor(!invertColor);
+    let tempColor = primaryColor;
+    setPrimaryColor(secondaryColor);
+    setSecondaryColor(tempColor);
   };
 
   const playerPosition = (letter) => {
@@ -246,7 +258,10 @@ function Players() {
         >
           <CardMedia
             className={classes.mediaBack}
-            style={{ backgroundColor: secondaryColor.hex }}
+            style={{
+              backgroundColor: secondaryColor.hex,
+              borderColor: secondaryColor.hex,
+            }}
             image={`https://ak-static.cms.nba.com/wp-content/uploads/silos/nba/latest/440x700/${player.pl.pid}.png`}
           />
           <div className={classes.overlay}>
@@ -257,7 +272,10 @@ function Players() {
                   aria-label="Player Number"
                   variant="square"
                   className={classes.square}
-                  style={{ backgroundColor: primaryColor.hex }}
+                  style={{
+                    backgroundColor: primaryColor.hex,
+                    color: secondaryColor.hex,
+                  }}
                 >
                   {player.pl.num}
                 </Avatar>
@@ -314,6 +332,7 @@ function Players() {
                   className={classes.square}
                   style={{
                     backgroundColor: primaryColor.hex,
+                    color: secondaryColor.hex,
                   }}
                 >
                   {player.pl.num}
@@ -357,17 +376,27 @@ function Players() {
 
   return (
     <div>
-      <FormControl className={classes.formControl}>
-        <Dropdown
-          options={options}
-          onChange={handleChange}
-          placeholder="Select team"
-        />
-        Click player to learn more
-      </FormControl>
-      {/* <img
-        src={`http://i.cdn.turner.com/nba/nba/.element/img/1.0/teamsites/logos/teamlogos_500x500/${teamData.tricode}.png`}
-      /> */}
+      <Grid container spacing={3}>
+        <Grid item xs={9}>
+          <FormControl className={classes.formControl}>
+            <Dropdown
+              options={options}
+              onChange={handleChange}
+              placeholder="Select team"
+            />
+          </FormControl>
+          <div>Click player to learn more</div>
+        </Grid>
+        <Grid item xs={3}>
+          <br />
+          <div>
+            Invert Card Colors
+            <br />
+            <Switch checked={invertColor} onChange={toggleColors} />
+          </div>
+        </Grid>
+      </Grid>
+
       <br />
       <Grid container spacing={2}>
         {currentRoster}

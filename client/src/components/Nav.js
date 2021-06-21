@@ -57,20 +57,22 @@ ScrollTop.propTypes = {
 
 export default function BackToTop(props) {
   return (
-    <React.Fragment style={{ margin: 20 }}>
-      <CssBaseline />
-      <AppBar>
-        <Toolbar>
-          <Typography variant="h6">NBA Assist </Typography>
-        </Toolbar>
-      </AppBar>
-      <Toolbar id="back-to-top-anchor" />
+    <React.Fragment>
+      <div style={{ margin: 20 }}>
+        <CssBaseline />
+        <AppBar>
+          <Toolbar>
+            <Typography variant="h6">NBA Assist </Typography>
+          </Toolbar>
+        </AppBar>
+        <Toolbar id="back-to-top-anchor" />
 
-      <ScrollTop {...props}>
-        <Fab color="secondary" size="small" aria-label="scroll back to top">
-          <KeyboardArrowUpIcon />
-        </Fab>
-      </ScrollTop>
+        <ScrollTop {...props}>
+          <Fab color="secondary" size="small" aria-label="scroll back to top">
+            <KeyboardArrowUpIcon />
+          </Fab>
+        </ScrollTop>
+      </div>
     </React.Fragment>
   );
 }
